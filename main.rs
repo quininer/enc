@@ -36,25 +36,17 @@ macro_rules! err {
 
 
 fn main() {
-    let app = App::new(env!("CARGO_PKG_NAME"))
+    let matches = App::new(env!("CARGO_PKG_NAME"))
         .version(env!("CARGO_PKG_VERSION"))
         .author(env!("CARGO_PKG_AUTHORS"))
         .about(env!("CARGO_PKG_DESCRIPTION"))
         .arg(Arg::with_name("input").long("input").short("i").value_name("input file").help("input file path. if empty, use `stdin`"))
         .arg(Arg::with_name("output").long("output").short("o").value_name("output file").help("output file path. if empty, use `stdout`"))
         .arg(Arg::with_name("passphrase").long("passphrase").short("p").value_name("passphrase").help("passphrase. if empty, use `ttyaskpass`"))
-        .arg(Arg::with_name("cipher").long("cipher").short("c").help("Choose cipher -- ASCON, HRHB, HHB, if empty, use `HRHB`"))
+        .arg(Arg::with_name("cipher").long("cipher").short("c").value_name("cipher").help("Choose cipher -- ASCON, HRHB, HHB, if empty, use `HRHB`"))
         .arg(Arg::with_name("encrypt").short("e").help("encrypt mode").display_order(0))
-        .arg(Arg::with_name("decrypt").short("d").help("decrypt mode").display_order(1));
-
-    let mut help_buf = Vec::new();
-    app.write_help(&mut help_buf).unwrap();
-
-    let matches = app.get_matches();
-
-    if matches.occurrences_of("h") != 0 {
-        io::stdout().write_all(&help_buf).unwrap();
-    }
+        .arg(Arg::with_name("decrypt").short("d").help("decrypt mode").display_order(1))
+        .get_matches();
 
     let mut input = if let Some(path) = matches.value_of("input") {
         Box::new(File::open(path).unwrap()) as Box<Read>
@@ -98,11 +90,11 @@ fn encrypt(cipher: Option<Cipher>, pass: Bytes, input: &mut Read, output: &mut W
 
     input.read_to_end(&mut data)?;
     OsRng::new()?.fill_bytes(&mut salt);
-    let key = Argon2i::default()
+    let data = Argon2i::default()
         .with_size(cipher.key_length())
         .derive::<Bytes>(&pass, &salt)
+        .map(|key| cipher.encrypt(&key, &data))
         .or_else(|err| err!(Other, err.description()))?;
-    let data = cipher.encrypt(&key, &data);
 
     output.write(MAGIC_NUMBER)?;
     output.write(&[cipher as u8])?;
@@ -121,12 +113,14 @@ fn decrypt(cipher: Option<Cipher>, pass: Bytes, input: &mut Read, output: &mut W
     input.read_exact(&mut salt)?;
     input.read_to_end(&mut data)?;
 
-    let key = Argon2i::default()
+    let data = Argon2i::default()
         .with_size(cipher.key_length())
         .derive::<Bytes>(&pass, &salt)
-        .or_else(|err| err!(Other, err.description()))?;
-    let data = cipher.decrypt(&key, &data)
-        .or_else(|err| err!(Other, err.description()))?;
+        .or_else(|err| err!(Other, err.description()))
+        .and_then(|key|
+            cipher.decrypt(&key, &data)
+                .or_else(|err| err!(Other, err.description()))
+        )?;
 
     output.write_all(&data)
 }
