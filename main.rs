@@ -46,6 +46,7 @@ fn main() {
         .arg(Arg::with_name("cipher").long("cipher").short("c").value_name("cipher").help("Choose cipher -- ASCON, HRHB, HHBB, if empty, use `HRHB`"))
         .arg(Arg::with_name("encrypt").short("e").help("encrypt mode").display_order(0))
         .arg(Arg::with_name("decrypt").short("d").help("decrypt mode").display_order(1))
+        .arg(Arg::with_name("repeat").short("r").help("repeat the password once").display_order(3))
         .get_matches();
 
     let mut input = if let Some(path) = matches.value_of("input") {
@@ -68,6 +69,10 @@ fn main() {
     } else {
         askpass('~')
     };
+
+    if matches.occurrences_of("repeat") != 0 {
+        assert_eq!(passphrase, askpass::<Bytes>('~'), "Entered passwords differ!");
+    }
 
     if matches.occurrences_of("encrypt") != 0 || matches.occurrences_of("decrypt") == 0 {
         encrypt(cipher, passphrase, &mut input, &mut output).unwrap();
