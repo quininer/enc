@@ -43,7 +43,7 @@ fn main() {
         .arg(Arg::with_name("input").long("input").short("i").value_name("input file").help("input file path. if empty, use `stdin`"))
         .arg(Arg::with_name("output").long("output").short("o").value_name("output file").help("output file path. if empty, use `stdout`"))
         .arg(Arg::with_name("passphrase").long("passphrase").short("p").value_name("passphrase").help("passphrase. if empty, use `ttyaskpass`"))
-        .arg(Arg::with_name("cipher").long("cipher").short("c").value_name("cipher").help("Choose cipher -- ASCON, HRHB, HHB, if empty, use `HRHB`"))
+        .arg(Arg::with_name("cipher").long("cipher").short("c").value_name("cipher").help("Choose cipher -- ASCON, HRHB, HHBB, if empty, use `HRHB`"))
         .arg(Arg::with_name("encrypt").short("e").help("encrypt mode").display_order(0))
         .arg(Arg::with_name("decrypt").short("d").help("decrypt mode").display_order(1))
         .get_matches();
@@ -130,7 +130,7 @@ fn decrypt(cipher: Option<Cipher>, pass: Bytes, input: &mut Read, output: &mut W
 enum Cipher {
     ASCON = 0,
     HRHB = 1,
-    HHB = 2
+    HHBB = 2
 }
 
 impl Cipher {
@@ -138,7 +138,7 @@ impl Cipher {
         match num {
             0 => Ok(Cipher::ASCON),
             1 => Ok(Cipher::HRHB),
-            2 => Ok(Cipher::HHB),
+            2 => Ok(Cipher::HHBB),
             n => Err(n)
         }
     }
@@ -147,7 +147,7 @@ impl Cipher {
         match name.to_lowercase().as_str() {
             "ascon" => Ok(Cipher::ASCON),
             "hrhb" => Ok(Cipher::HRHB),
-            "hhb" => Ok(Cipher::HHB),
+            "hhb" => Ok(Cipher::HHBB),
             _ => Err(name)
         }
     }
@@ -155,24 +155,24 @@ impl Cipher {
     pub fn key_length(&self) -> usize {
         match *self {
             Cipher::ASCON => Ascon::key_length(),
-            Cipher::HRHB => RivGeneral::<HC256, HMAC<Blake2b>>::key_length(),
-            Cipher::HHB => General::<HC256, HMAC<Blake2b>>::key_length()
+            Cipher::HRHB => RivGeneral::<HC256, HMAC<Blake2b>, Blake2b>::key_length(),
+            Cipher::HHBB => General::<HC256, HMAC<Blake2b>, Blake2b>::key_length()
         }
     }
 
     pub fn encrypt(&self, key: &[u8], data: &[u8]) -> Vec<u8> {
         match *self {
             Cipher::ASCON => Ascon::seal(key, data),
-            Cipher::HRHB => RivGeneral::<HC256, HMAC<Blake2b>>::seal(key, data),
-            Cipher::HHB => General::<HC256, HMAC<Blake2b>>::seal(key, data)
+            Cipher::HRHB => RivGeneral::<HC256, HMAC<Blake2b>, Blake2b>::seal(key, data),
+            Cipher::HHBB => General::<HC256, HMAC<Blake2b>, Blake2b>::seal(key, data)
         }
     }
 
     pub fn decrypt(&self, key: &[u8], data: &[u8]) -> Result<Vec<u8>, DecryptFail> {
         match *self {
             Cipher::ASCON => Ascon::open(key, data),
-            Cipher::HRHB => RivGeneral::<HC256, HMAC<Blake2b>>::open(key, data),
-            Cipher::HHB => General::<HC256, HMAC<Blake2b>>::open(key, data)
+            Cipher::HRHB => RivGeneral::<HC256, HMAC<Blake2b>, Blake2b>::open(key, data),
+            Cipher::HHBB => General::<HC256, HMAC<Blake2b>, Blake2b>::open(key, data)
         }
     }
 }

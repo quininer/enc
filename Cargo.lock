@@ -4,7 +4,7 @@ version = "0.1.0"
 dependencies = [
  "clap 2.17.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "rand 0.3.14 (registry+https://github.com/rust-lang/crates.io-index)",
- "sarkara 0.5.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "sarkara 0.6.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "seckey 0.2.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "ttyaskpass 0.1.0 (git+https://github.com/quininer/ttyaskpass.git)",
 ]
@@ -169,7 +169,7 @@ dependencies = [
 
 [[package]]
 name = "sarkara"
-version = "0.5.1"
+version = "0.6.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "argon2rs 0.2.5 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -282,7 +282,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 "checksum memsec 0.1.10 (registry+https://github.com/rust-lang/crates.io-index)" = "d97a6c2bc25b20f1b78f54be9f10430533966c226e2a3736c9782d96cca39d88"
 "checksum newhope 0.1.5 (registry+https://github.com/rust-lang/crates.io-index)" = "26fbe85d2f9e950d5134b135ab3abd56eae6ca049210e5625187f1ff827dd98a"
 "checksum rand 0.3.14 (registry+https://github.com/rust-lang/crates.io-index)" = "2791d88c6defac799c3f20d74f094ca33b9332612d9aef9078519c82e4fe04a5"
-"checksum sarkara 0.5.1 (registry+https://github.com/rust-lang/crates.io-index)" = "96a637506715713be5a854becd332959d56ac4f167bec3668f098095fc60524f"
+"checksum sarkara 0.6.0 (registry+https://github.com/rust-lang/crates.io-index)" = "19b99c9ebbcdb7db9a29a4162495171c5599c23b2b2e7fd7bd77a3c8e8fdec6e"
 "checksum scoped_threadpool 0.1.7 (registry+https://github.com/rust-lang/crates.io-index)" = "3ef399c8893e8cb7aa9696e895427fab3a6bf265977bb96e126f24ddd2cda85a"
 "checksum seckey 0.2.3 (registry+https://github.com/rust-lang/crates.io-index)" = "633b31f778687b05e91ca81dad2fe17b269eaf0a4ad00f6431960037d9b8b6a9"
 "checksum strsim 0.5.1 (registry+https://github.com/rust-lang/crates.io-index)" = "50c069df92e4b01425a8bf3576d5d417943a6a7272fbabaf5bd80b1aaa76442e"
