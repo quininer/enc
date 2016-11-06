@@ -152,7 +152,7 @@ impl Cipher {
         match name.to_lowercase().as_str() {
             "ascon" => Ok(Cipher::ASCON),
             "hrhb" => Ok(Cipher::HRHB),
-            "hhb" => Ok(Cipher::HHBB),
+            "hhbb" => Ok(Cipher::HHBB),
             _ => Err(name)
         }
     }
