@@ -46,7 +46,7 @@ fn main() {
         .arg(Arg::with_name("cipher").long("cipher").short("c").value_name("cipher").help("Choose cipher").possible_values(&Cipher::variants()))
         .arg(Arg::with_name("encrypt").short("e").help("encrypt mode").display_order(0))
         .arg(Arg::with_name("decrypt").short("d").help("decrypt mode").display_order(1))
-        .arg(Arg::with_name("repeat").short("r").help("repeat the password once").display_order(3))
+        .arg(Arg::with_name("repeat").short("r").help("repeat the password once").display_order(2))
         .get_matches();
 
     let mut input = if let Some(path) = matches.value_of("input") {
